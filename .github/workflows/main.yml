@@ -12,6 +12,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # --- NUEVO PASO: Instalar librerías C++ necesarias ---
+    - name: Instalar librerías del sistema para lxml
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxml2-dev libxslt1-dev python3-dev
+    # -----------------------------------------------------
+
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -36,7 +43,7 @@ jobs:
 
     - name: Build APK
       run: |
-        # Flet detectará automáticamente la carpeta 'assets' y la incluirá
+        # Flet usará la carpeta assets automáticamente
         flet build apk --verbose
 
     - name: Upload APK
