@@ -1,46 +1,38 @@
-name: Build Android APK con DOCX
+name: Compilar APK Policial
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Descargar tu código
-      uses: actions/checkout@v4
+      - name: 1. Descargar código
+        uses: actions/checkout@v3
 
-    - name: Instalar Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: 2. Preparar Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Instalar dependencias (Aquí sí funciona lxml)
-      run: |
-        pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install flet
+      - name: 3. Instalar librerías (Flet 0.22.1)
+        run: |
+          pip install -r requirements.txt
 
-    - name: Configurar entorno Android
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
+      - name: 4. Preparar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x'
 
-    - name: Instalar herramientas de Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.19.0'
+      - name: 5. Construir APK
+        run: |
+          flet build apk --verbose
 
-    - name: Compilar APK (Con tu plantilla incluida)
-      run: |
-        # El truco es --include: Fuerza a meter el docx en la app
-        flet build apk --verbose --include plantilla.docx
-
-    - name: Subir el APK generado
-      uses: actions/upload-artifact@v4
-      with:
-        name: Atestados-App
-        path: build/app/outputs/flutter-apk/app-release.apk
+      - name: 6. Subir el APK a GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: App-Policial-APK
+          path: build/app/outputs/apk/release/app-release.apk
